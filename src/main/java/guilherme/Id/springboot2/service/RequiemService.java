@@ -1,44 +1,47 @@
 package guilherme.Id.springboot2.service;
 
 import guilherme.Id.springboot2.domain.Requiem;
+import guilherme.Id.springboot2.exception.BadRequestException;
 import guilherme.Id.springboot2.repository.RequiemRepository;
+import guilherme.Id.springboot2.request.RequiemPostRequestBody;
+import guilherme.Id.springboot2.request.RequiemPutRequestBody;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@RequiredArgsConstructor
 public class RequiemService {
-    private  static List<Requiem>  requiems;
-    static{
-        requiems = new ArrayList<>(List.of(new Requiem( 1L, "Berserk"), new Requiem(2L,"SAO")));
-    }
-    public static Requiem save(Requiem requiem) {
-        requiem.setId(ThreadLocalRandom.current().nextLong(3,100000));
-        requiems.add(requiem);
-        return requiem;
-    }
+
+    private final RequiemRepository requiemRepository;
 
     public List<Requiem> listAll(){
-        return requiems;
+        return requiemRepository.findAll();
     }
 
-    public Requiem findById(long id){
-        return requiems.stream()
-                .filter(requiem -> requiem.getId().equals(id))
-                .findFirst()
-                .orElseThrow( () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id not Found Requiem"));
+    public List<Requiem> findByName (String name){ return requiemRepository.findByName(name);}
+
+    public Requiem findByIdOrThrowBadRequestException(long id){
+        return requiemRepository.findById(id)
+                .orElseThrow( () -> new BadRequestException("Id not Found Requiem"));
+    }
+    public Requiem save(RequiemPostRequestBody requiemPostRequestBody) {
+        return requiemRepository.save(Requiem.builder().name(requiemPostRequestBody.getName()).build());
     }
 
     public void delete(long id) {
-        requiems.remove(findById(id));
+        requiemRepository.delete(findByIdOrThrowBadRequestException(id));
     }
 
-    public void replace(Requiem requiem) {
-        delete(requiem.getId());
-        requiems.add(requiem);
+    public void replace(RequiemPutRequestBody requiemPutRequestBody) {
+        Requiem savedRequiem = findByIdOrThrowBadRequestException(requiemPutRequestBody.getId());
+        Requiem requiem = Requiem.builder()
+                .id(savedRequiem.getId())
+                .name(requiemPutRequestBody.getName())
+                .build();
+        requiemRepository.save(requiem);
     }
 }

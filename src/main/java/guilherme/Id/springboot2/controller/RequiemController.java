@@ -1,5 +1,7 @@
 package guilherme.Id.springboot2.controller;
 import guilherme.Id.springboot2.domain.Requiem;
+import guilherme.Id.springboot2.request.RequiemPostRequestBody;
+import guilherme.Id.springboot2.request.RequiemPutRequestBody;
 import guilherme.Id.springboot2.service.RequiemService;
 import guilherme.Id.springboot2.util.DateUtil;
 
@@ -20,6 +22,7 @@ public class RequiemController {
 
     private final DateUtil dateUtil;
     private final RequiemService requiemService;
+    private RequiemPostRequestBody requiem;
 
     //localhost:8080/requiems/list
     @GetMapping
@@ -30,21 +33,27 @@ public class RequiemController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Requiem> findById(@PathVariable long id){
-        return ResponseEntity.ok(requiemService.findById(id));
+        return ResponseEntity.ok(requiemService.findByIdOrThrowBadRequestException(id));
+    }
+
+    @GetMapping(path = "/find")
+    public ResponseEntity<List<Requiem>> findByName(@RequestParam String name){
+        return ResponseEntity.ok(requiemService.findByName(name));
     }
 
     @PostMapping
-    public ResponseEntity<Requiem> save(@RequestBody Requiem requiem){
-        return new ResponseEntity<>(RequiemService.save(requiem), HttpStatus.CREATED);
+    public ResponseEntity<Requiem> save(@RequestBody RequiemPostRequestBody requiem){
+        return new ResponseEntity<>(requiemService.save(requiem), HttpStatus.CREATED);
     }
+
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id){
         requiemService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping
-    public ResponseEntity<Void> replace(@RequestBody Requiem requiem){
-        requiemService.replace(requiem);
+    public ResponseEntity<Void> replace(@RequestBody RequiemPutRequestBody requiemPutRequestBody){
+        requiemService.replace(requiemPutRequestBody);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

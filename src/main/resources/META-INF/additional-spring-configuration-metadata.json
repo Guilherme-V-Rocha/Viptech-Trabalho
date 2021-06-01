@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "sever.error.include-stacktrace",
+      "type": "java.lang.String",
+      "description": "Description for sever.error.include-stacktrace."
+    },
+    {
+      "name": "include-stacktrace",
+      "type": "java.lang.String",
+      "description": "Description for include-stacktrace."
+    }
+  ] }
