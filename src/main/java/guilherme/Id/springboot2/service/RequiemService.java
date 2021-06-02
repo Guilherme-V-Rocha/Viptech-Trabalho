@@ -8,6 +8,7 @@ import guilherme.Id.springboot2.request.RequiemPutRequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -28,6 +29,8 @@ public class RequiemService {
         return requiemRepository.findById(id)
                 .orElseThrow( () -> new BadRequestException("Id not Found Requiem"));
     }
+
+    @Transactional
     public Requiem save(RequiemPostRequestBody requiemPostRequestBody) {
         return requiemRepository.save(Requiem.builder().name(requiemPostRequestBody.getName()).build());
     }

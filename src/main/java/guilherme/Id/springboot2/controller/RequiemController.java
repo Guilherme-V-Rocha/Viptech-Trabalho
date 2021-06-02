@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class RequiemController {
     }
 
     @PostMapping
-    public ResponseEntity<Requiem> save(@RequestBody RequiemPostRequestBody requiem){
+    public ResponseEntity<Requiem> save(@RequestBody @Valid RequiemPostRequestBody requiem){
         return new ResponseEntity<>(requiemService.save(requiem), HttpStatus.CREATED);
     }
 
